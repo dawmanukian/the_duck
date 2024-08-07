@@ -3,10 +3,19 @@ const { User } = require("../models/models");
 class UserController {
     async create(req, res, next) {
         try {
-            const { telegramId } = req.body;
-            const user = await User.create({ telegramId })
+            const { telegramId, referral } = req.body;
+            const user = await User.create({ telegramId, referral, refCode: +telegramId })
+
+            if (referral) {
+                const user = await User.findOne({where: {refCode: +referral}})
+                if (user) {
+                    const balance = user.balance + 500
+                    await User.update(balance, {where: {refCode: +referral}})
+                }
+            }
+
             if (user){
-                return res.status(201).send({success: true, ...user.toJSON()});
+                return res.status(201).send({success: true, ...user.toJSON(), ref: +referral});
             }
         }
         catch (error) {
@@ -77,6 +86,18 @@ class UserController {
             next(e);
         }
     }
+
+    async getRef(req,res,next) {
+        const { referral } = req.body;
+        try {
+            const refs = await User.findAll({where: {referral}})
+            res.status(200).json(refs);
+        }
+        catch (e) {
+            next(e);
+        }
+    }
+
 }
 
 module.exports = new UserController();

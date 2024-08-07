@@ -24,7 +24,6 @@ const User = sequelize.define('User', {
     refCode: {
         type: DataTypes.BIGINT,
         allowNull: false,
-        defaultValue: Math.floor(Math.random() * 1000000),
     },
     referral: {
         type: DataTypes.BIGINT,
