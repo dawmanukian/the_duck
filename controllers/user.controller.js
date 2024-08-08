@@ -4,13 +4,13 @@ class UserController {
     async create(req, res, next) {
         try {
             const { telegramId, referral } = req.body;
-            const user = await User.create({ telegramId, referral, refCode: +telegramId })
+            const user = await User.create({ telegramId, referral, refCode: telegramId })
 
             if (referral) {
-                const user = await User.findOne({where: {refCode: +referral}})
+                const user = await User.findOne({where: {refCode: referral}})
                 if (user) {
                     const balance = user.balance + 500
-                    await User.update(balance, {where: {refCode: +referral}})
+                    await User.update(balance, {where: {refCode: referral}})
                 }
             }
 
